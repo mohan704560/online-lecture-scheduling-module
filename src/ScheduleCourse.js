@@ -7,30 +7,74 @@ import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import axios from "axios";
+// import { makeStyles } from "@mui/material/styles";
+import Autocomplete from '@mui/material/Autocomplete';
+// import TextField from '@material-ui/core/TextField';
+
+// const useStyles = makeStyles((theme) => ({
+//   container: {
+//     display: "flex",
+//     flexWrap: "wrap",
+//   },
+//   textField: {
+//     marginLeft: theme.spacing(1),
+//     marginRight: theme.spacing(1),
+//     width: 200,
+//   },
+// }));
 
 const theme = createTheme();
 
-export default function AddCourse() {
+export default function ScheduleCourse() {
   const [level, setLevel] = React.useState("");
+  const [course, setCourse] = React.useState([]);
+  const [user, setUser] = React.useState([]);
 
   const handleChange = (event) => {
     setLevel(event.target.value);
   };
 
-  const handleSubmit = async(event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
+    console.log({
+      email: data.get("courseName"),
+      password: data.get("level"),
+      description: data.get("description"),
+      thumbnail: data.get("thumbnail"),
+      data: data,
+    });
     // console.log(data.get("thumbnail"));
     // const thumbnailInput = document.getElementById("thumbnail").files[0];
     // console.log(thumbnailInput);
-    const res = await axios.post("/course",{
-      courseName: data.get("courseName"),
-      level: data.get("level"),
+    const res = await axios.post("/course", {
+      email: data.get("courseName"),
+      password: data.get("level"),
       description: data.get("description"),
       thumbnail: data.get("thumbnail"),
     });
     console.log(res);
   };
+
+  // const classes = useStyles();
+
+  const fetchCourse = async () => {
+    const res = await axios.get("/course");
+    console.log(res);
+    res && setCourse(res.data.data);
+  };
+
+  const fetchUser = async () => {
+    const res = await axios.get("/user");
+    console.log(res);
+   const newUser = res.data.data.filter((ele)=>ele.name!=="Admin")
+    res && setUser(newUser);
+  };
+
+  React.useEffect(() => {
+    fetchCourse();
+    fetchUser();
+  }, []);
 
   return (
     <ThemeProvider theme={theme}>
@@ -44,10 +88,25 @@ export default function AddCourse() {
             alignItems: "center",
           }}
         >
-          <form
-            onSubmit={handleSubmit}
-            enctype="multipart/form-data"
-          >
+          <form onSubmit={handleSubmit}>
+          <Autocomplete
+            disablePortal
+            id="course"
+            options={course}
+            getOptionLabel={(option) => option.courseName}
+            fullWidth
+            renderInput={(params) => <TextField {...params} label="Course" />}
+          />
+          <Autocomplete
+            disablePortal
+            id="instructor"
+            options={user}
+            getOptionLabel={(option) => option.name }
+            fullWidth
+            sx={{ mt: 1 }}
+            renderInput={(params) => <TextField {...params} label="Instructor" />}
+          />
+    
             <TextField
               margin="normal"
               required
@@ -57,22 +116,6 @@ export default function AddCourse() {
               name="courseName"
               autoFocus
             />
-            <FormControl fullWidth sx={{ mt: 1 }}>
-              <InputLabel id="demo-simple-select-label">Level</InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="level"
-                name="level"
-                required
-                value={level}
-                label="Level"
-                onChange={handleChange}
-              >
-                <MenuItem value="Graduate">Graduate</MenuItem>
-                <MenuItem value="Post Graduate">Post Graduate</MenuItem>
-                <MenuItem value="Master">Master</MenuItem>
-              </Select>
-            </FormControl>
 
             <TextField
               id="description"

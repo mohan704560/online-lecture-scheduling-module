@@ -5,6 +5,7 @@ import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import AddCourse from './AddCourse';
+import ScheduleCourse from './ScheduleCourse';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -51,7 +52,7 @@ export default function CourseForm() {
         <AddCourse/>
       </TabPanel>
       <TabPanel value={value} index={1}>
-        Item Two
+        <ScheduleCourse/>
       </TabPanel>
     </Box>
   );
