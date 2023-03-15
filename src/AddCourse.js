@@ -20,16 +20,16 @@ export default function AddCourse() {
   const handleSubmit = async(event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    // console.log(data.get("thumbnail"));
-    // const thumbnailInput = document.getElementById("thumbnail").files[0];
-    // console.log(thumbnailInput);
     const res = await axios.post("/course",{
       courseName: data.get("courseName"),
       level: data.get("level"),
       description: data.get("description"),
       thumbnail: data.get("thumbnail"),
+    },{
+      headers:{
+        "Content-Type": "multipart/form-data",
+      }
     });
-    console.log(res);
   };
 
   return (
@@ -46,7 +46,6 @@ export default function AddCourse() {
         >
           <form
             onSubmit={handleSubmit}
-            enctype="multipart/form-data"
           >
             <TextField
               margin="normal"
@@ -82,12 +81,12 @@ export default function AddCourse() {
               fullWidth
               multiline
               maxRows={4}
-              sx={{ mt: 1 }}
+              sx={{ mt: 2 }}
             />
-            {/* <Button variant="contained" component="label" fullWidth sx={{mt:3}}>
+            <Button variant="contained" component="label" fullWidth sx={{mt:3}}>
             thumbnail
               <input hidden accept="image/*" type="file" name="thumbnail" id="thumbnail"/>
-            </Button> */}
+            </Button>
             <Button
               type="submit"
               fullWidth

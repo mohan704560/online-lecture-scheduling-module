@@ -5,58 +5,24 @@ import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import axios from "axios";
-// import { makeStyles } from "@mui/material/styles";
-import Autocomplete from '@mui/material/Autocomplete';
-// import TextField from '@material-ui/core/TextField';
-
-// const useStyles = makeStyles((theme) => ({
-//   container: {
-//     display: "flex",
-//     flexWrap: "wrap",
-//   },
-//   textField: {
-//     marginLeft: theme.spacing(1),
-//     marginRight: theme.spacing(1),
-//     width: 200,
-//   },
-// }));
+import Autocomplete from "@mui/material/Autocomplete";
 
 const theme = createTheme();
 
 export default function ScheduleCourse() {
-  const [level, setLevel] = React.useState("");
   const [course, setCourse] = React.useState([]);
   const [user, setUser] = React.useState([]);
-
-  const handleChange = (event) => {
-    setLevel(event.target.value);
-  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("courseName"),
-      password: data.get("level"),
-      description: data.get("description"),
-      thumbnail: data.get("thumbnail"),
-      data: data,
-    });
-    // console.log(data.get("thumbnail"));
-    // const thumbnailInput = document.getElementById("thumbnail").files[0];
-    // console.log(thumbnailInput);
     const res = await axios.post("/course", {
-      email: data.get("courseName"),
-      password: data.get("level"),
-      description: data.get("description"),
-      thumbnail: data.get("thumbnail"),
+      course: data.get("course"),
+      instructor: data.get("instructor"),
+      date: data.get("date"),
     });
-    console.log(res);
   };
-
-  // const classes = useStyles();
 
   const fetchCourse = async () => {
     const res = await axios.get("/course");
@@ -67,7 +33,7 @@ export default function ScheduleCourse() {
   const fetchUser = async () => {
     const res = await axios.get("/user");
     console.log(res);
-   const newUser = res.data.data.filter((ele)=>ele.name!=="Admin")
+    const newUser = res.data.data.filter((ele) => ele.name !== "Admin");
     res && setUser(newUser);
   };
 
@@ -88,49 +54,31 @@ export default function ScheduleCourse() {
             alignItems: "center",
           }}
         >
-          <form onSubmit={handleSubmit}>
-          <Autocomplete
-            disablePortal
-            id="course"
-            options={course}
-            getOptionLabel={(option) => option.courseName}
-            fullWidth
-            renderInput={(params) => <TextField {...params} label="Course" />}
-          />
-          <Autocomplete
-            disablePortal
-            id="instructor"
-            options={user}
-            getOptionLabel={(option) => option.name }
-            fullWidth
-            sx={{ mt: 1 }}
-            renderInput={(params) => <TextField {...params} label="Instructor" />}
-          />
-    
-            <TextField
-              margin="normal"
-              required
+          <form onSubmit={handleSubmit} style={{width:"100%"}}>
+            <Autocomplete
+              disablePortal
+              id="course"
+              options={course}
+              getOptionLabel={(option) => option.courseName}
               fullWidth
-              id="courseName"
-              label="Course Name"
-              name="courseName"
-              autoFocus
-            />
-
-            <TextField
-              id="description"
-              label="Description"
-              name="description"
               required
-              fullWidth
-              multiline
-              maxRows={4}
-              sx={{ mt: 1 }}
+              renderInput={(params) => <TextField {...params} label="Course" />}
             />
-            {/* <Button variant="contained" component="label" fullWidth sx={{mt:3}}>
-            thumbnail
-              <input hidden accept="image/*" type="file" name="thumbnail" id="thumbnail"/>
-            </Button> */}
+            <Autocomplete
+              disablePortal
+              id="instructor"
+              options={user}
+              getOptionLabel={(option) => option.name}
+              fullWidth
+              required
+              sx={{ mt: 2 }}
+              renderInput={(params) => (
+                <TextField {...params} label="Instructor" />
+              )}
+            />
+           
+           <input type="text" id="date" placeholder="DD/MM/YYYY" onFocus="(this.type='date')" style={{width:"100%", height:"60px", borderColor:"rgb(0,0,0,0.1)", borderRadius:"4px", marginTop:"16px", padding:"16px", fontSize:"14px"}}/>
+      
             <Button
               type="submit"
               fullWidth
